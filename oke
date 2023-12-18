@@ -1,0 +1,181 @@
+pcall(function()
+    game.ReplicatedStorage.Events.Remotes:FindFirstChild("KillConfirmed"):Destroy()
+    game.ReplicatedStorage.Events.Remotes:FindFirstChild("GunFired"):Destroy()
+    game.ReplicatedStorage.Events.Remotes:FindFirstChild("UniqueFireEvent"):Destroy()
+    game.ReplicatedFirst.SecondaryClientReciever:Destroy()
+    game.Lighting:FindFirstChild("Blur"):Destroy()
+    game.Lighting:FindFirstChild("Flash"):Destroy()
+end)
+local lp = game.Players.LocalPlayer
+local bk = lp.Backpack
+local rm = game.ReplicatedStorage.Events.Remotes
+local npcfolder = workspace.NPCFolders
+local forbiddenenemies = {
+    "Golden Present",
+    "Present",
+    "Diabolical Destructful",
+    "Raigbidi Scientist",
+    "Scientist Raigbidi",
+    "Screeching Raighead",
+    "Raig"
+}
+
+-- i dont know what this does
+function notif(text, id)
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = "Enemy Spawn Warning",
+        Text = text,
+        Icon = "rbxassetid://" .. id 
+    })
+end
+-- workspace stuff
+workspace.BossSpawn.Transparency = 0.75
+for i,v in pairs(workspace.Map.Invisible:GetChildren()) do
+    v:Destroy()
+end
+workspace.Parts.ChildAdded:connect(function(v)
+    if v.Name:match("explosion") or v.Name:match("BOOM") then
+        v:WaitForChild("MainExplosion"):Destroy()
+    end
+end)
+
+-- healorb healing my sight fr fr?
+for i,v in pairs(rm.Camera:GetChildren()) do
+    local name = v.Name
+    local clone = rm.ClientTween:clone()
+    v:Destroy()
+    clone.Parent = rm.Camera
+    clone.Name = name
+end
+
+-- platform
+local inst = Instance.new("Part")
+inst.Parent = workspace
+inst.Position = Vector3.new(-22, 100, 310)
+inst.Transparency = 0.75
+inst.CanCollide = true
+inst.Size = Vector3.new(250,5,150)
+inst.Anchored = true
+inst.Material = "SmoothPlastic"
+
+-- exec stuff
+
+-- upgrades mod real
+function upgradething(name, number)
+    number = tonumber(number) or 0
+    workspace.Upgrades[name].Position = Vector3.new(50, 110, number)
+    workspace.Upgrades[name].Rotation = Vector3.new(180, -90, 180)
+    workspace.Upgrades[name].Size = Vector3.new(10,10,0.25)
+    workspace.Upgrades[name].ClickDetector.MaxActivationDistance = math.huge
+end
+
+upgradething("CoreRegen", 353)
+upgradething("CorePower", 343)
+upgradething("CoreHealth", 333)
+upgradething("MoreFriendship", 323)
+upgradething("PlayerHealth", 313)
+
+workspace.Map.IMPORTANT.Bambi.Head.Position = Vector3.new(50, 110, 287)
+workspace.Map.IMPORTANT.Dave.Head.Position = Vector3.new(50, 110, 300)
+workspace.Map.IMPORTANT.Bambi.Head.Rotation = Vector3.new(180, -90, 180)
+workspace.Map.IMPORTANT.Dave.Head.Rotation = Vector3.new(180, -90, 180)
+workspace.Map.IMPORTANT.Bambi.Head.Size = Vector3.new(10,10,10)
+workspace.Map.IMPORTANT.Dave.Head.Size = Vector3.new(10,10,10)
+
+-- the real shit going on
+npcfolder.EnemyFolder.ChildAdded:connect(function(v)
+    if v.Name == "Red Sus" then
+        notif("Red Susses are now among us. Beware.", "9180622665")
+    end
+    if v.Name == "Diabolical Destructful" then
+        notif("Nuke inbound! Prepare!", "59820288")
+    end
+    if v.Name == "Scientist Raigbidi" or v.Name == "Raigbidi Scientist" then
+        notif("Scientist Raigbidi has been deployed.", "14714959916")
+    end
+    if v.Name == "Present" then
+        notif("Present is present!", "15571632133")
+    end
+    if v.Name == "Golden Present" then
+        notif("Golden Present is here.", "12835253674")
+    end
+    if v.Name == "Screeching Raighead" then
+        notif("Screeching Raighead deployed!", "978313722")
+    end
+end)
+spawn(function()
+    while true do
+        for i,v in pairs(lp.Backpack:GetChildren()) do
+            if v:FindFirstChild("WeaponStats") then
+                local deez = require(v.WeaponStats)
+                deez.FireRate = 0.03
+                deez.Multiplier = 2
+                deez.InitialTA = 1 --testing
+                deez.TotalAmmo = 9999999999999999999999
+                deez.HoldToFire = true
+                deez.MinDamage = 29
+                deez.MaxDamage = 29
+                deez.InitialAmmo = 9999999
+                deez.InMag = 99999999999999
+                deez.Recoil = nil
+                deez.Element = "Blaze"
+                deez.ProjectileSpeed = 3000
+            end
+        end
+        for i,v in pairs(npcfolder.EnemyFolder:GetChildren()) do
+            if v:FindFirstChild("Torso") and v:FindFirstChild("Humanoid") then
+                if not v:FindFirstChildOfClass("ForceField") and v.Humanoid.Health > 0 then
+                    v.Torso.Size = Vector3.new(25,25,25)
+                    v.Torso.Transparency = 0.9
+                    v.Torso.Massless = true
+                    v.Torso.CanCollide = false
+                elseif v.Humanoid.Health == 0 then
+                    v:Destroy() --lol
+                end
+            end
+            if v:FindFirstChildOfClass("ForceField") and v:FindFirstChild("esp") then
+                v.esp:Destroy()
+            end
+            if not v:FindFirstChildOfClass("ForceField") and not v:FindFirstChild("esp") and not v:FindFirstChild("deez") then
+                local newhighlight = Instance.new("Highlight")
+                newhighlight.Name = "esp"
+                newhighlight.Parent = v
+                newhighlight.Enabled = true
+                newhighlight.FillColor = Color3.fromRGB(255, 31, 61)
+                newhighlight.FillTransparency = 0.80
+                newhighlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+                newhighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            end
+            if table.find(forbiddenenemies, v.Name) then
+                if v:FindFirstChild("esp") then
+                    v.esp.FillColor = Color3.fromRGB(255,255,0)
+                    v.esp.OutlineColor = Color3.fromRGB(255,255,0)
+                    v.esp.FillTransparency = 0.5
+                end
+            end
+        end
+        for i,v in pairs(lp.PlayerGui:GetDescendants()) do
+            if v.Name == "Jumpscare" then
+                v:Destroy()
+            end
+        end
+        lp:SetAttribute("UnfairImmunity", true)
+        task.wait()
+    end
+end)
+
+local char = game.Players.LocalPlayer.Character
+local hrp = char.HumanoidRootPart
+char.Parent = game.ReplicatedStorage
+hrp:Destroy()
+char.Parent = workspace
+for i,v in pairs(getsenv(game.StarterPlayer.StarterCharacterScripts["fov fixer"])) do
+print(i,v)
+end
+
+local args = {
+    [1] = "Trillionare's Bubblegum"
+}
+
+game.ReplicatedStorage.Events.RemoteFunction.ShopPurchase:InvokeServer(unpack(args))
+
