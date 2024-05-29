@@ -1,5 +1,5 @@
 local ReturnedTable = {}
-local 1DeathCounterQuote = {
+local DeathCounterQuote1 = {
     "heya.",
     "you look frustrated about something.",
     "what? was it something i did?",
@@ -8,4 +8,5 @@ local 1DeathCounterQuote = {
 ReturnedTable.GetSansDCQuote = function(tablename)
     return tablename
 end
+return ReturnedTable
     
