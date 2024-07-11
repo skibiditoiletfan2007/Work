@@ -1,1 +1,1 @@
-game.Players.LocalPlayer:Kick("Please join https://discord.gg/V6ETjQ76bP for newest KadeHub script.")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/skibiditoiletfan2007/KadeHubRepository/main/Latest.lua"))()
